@@ -2,6 +2,8 @@
 Install globally via npm  
 `npm install -g dydb`
 
+Create the configuration file described under `Configuration` below
+
 #Usage#
 `dydb command [options]`
 
