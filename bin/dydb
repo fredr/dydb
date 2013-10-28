@@ -1,0 +1,147 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var app = require(__dirname + '/../package.json');
+var dynamo = require(__dirname + '/../lib/dynamo.js');
+var fs = require('fs');
+var path = require('path');
+var settings = (function() {
+  var home = process.env.HOME || process.env.USERPROFILE;
+  
+  if (!home) {
+    console.log('Couldn\'t find home dir');
+    process.exit(1);
+  }
+  
+  var configFile = path.join(home, '.dydb');
+  
+  if (!fs.existsSync(configFile)) {
+    console.log('Couldn\'t find config file', configFile);
+    process.exit(1);
+  }
+  
+  var fileContent = fs.readFileSync(configFile);
+  return JSON.parse(fileContent);
+})();
+
+
+program
+  .version(app.version)
+  .usage('command [options]')
+  .option('-e, --env <name>', 'environment name as specified in the config');
+
+program.name = app.name;
+
+program.command('list')
+  .description('list all tables in database')
+  .action(function() {
+    dynamo(getEnvironmentSettings()).listTables(function (err, tableNames) {
+      tableNames.forEach(function(name) {
+        console.log(name);
+      });
+      process.exit(0);
+    });
+  });
+
+program.command('describe <table>')
+  .description('get the schema for a table')
+  .action(function(table) {
+    dynamo(getEnvironmentSettings()).describeTable(table, function(err, schema) {
+      console.log(JSON.stringify(schema, null, '  '));
+      process.exit(0);
+    });
+  });
+
+program.command('count <table>')
+  .description('get item count of table')
+  .action(function(table) {
+    dynamo(getEnvironmentSettings()).countItems(table, function(err, count) {
+      console.log(count);
+      process.exit(0);
+    })
+  });
+
+program.command('create <file>')
+  .description('create a table using a json definition file')
+  .action(function(file) {
+    fs.readFile(file, null, function(readError, fileContent) {
+      if (readError) {
+        console.log('error reading file', readError);
+        process.exit(1);
+      }
+      
+      dynamo(getEnvironmentSettings()).createTable(JSON.parse(fileContent), function(err, data) {
+        if (err) {
+          console.log('error creating table', err);
+          process.exit(1);
+        }
+        
+        console.log(data.TableName, data.TableStatus);
+        process.exit(0);
+      });
+    });
+  });
+
+program.command('delete <table>')
+  .description('delete a table')
+  .action(function(table) {
+    dynamo(getEnvironmentSettings()).deleteTable(table, function(err, data) {
+      if (err) {
+        console.log('error deleting', err);
+        process.exit(1);
+      }
+      
+      console.log(data.TableName, data.TableStatus);
+      process.exit(0);
+    });
+  });
+
+program.command('dump <table>')
+  .description('get all data from a table')
+  .action(function(table) {
+    dynamo(getEnvironmentSettings()).dumpTable(table, function(err, data) {
+      if (err) {
+        console.log('error dumping', err);
+        process.exit(1);
+      }
+      
+      console.log(JSON.stringify(data, null, '  '));
+      process.exit(0);
+    });
+  });
+
+program.command('truncate <table>')
+  .description('remove all data from a table')
+  .action(function(table) {
+    dynamo(getEnvironmentSettings()).truncateTable(table, function(err) {
+      if (err) {
+        console.log('error truncating', err);
+        process.exit(1);
+      }
+      
+      console.log('table truncated');
+      process.exit(0);
+    });
+    
+  });
+
+
+program.parse(process.argv);
+
+function getEnvironmentSettings() {
+  var environmentName = program.env;
+  if (!environmentName) {
+    var defaultEnvironmentName = Object.keys(settings).filter(function(environmentName) {
+      return settings[environmentName].default === true;
+    })[0];
+
+    return settings[defaultEnvironmentName]; 
+  }
+  
+  if (settings[environmentName]) {
+    return settings[environmentName];
+  }
+  
+  console.log('Couldn\'t find environment config for', environmentName);
+  process.exit(1);
+}
