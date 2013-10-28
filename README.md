@@ -37,10 +37,10 @@ Add `"default": true` to one of the entries, and that entry will be used when `-
             }
         },
         "prod": {
-            aws: {
-                accessKeyId: "yyy",
-                secretAccessKey: "yyy",
-                region: "yyy"
+            "aws": {
+                "accessKeyId": "yyy",
+                "secretAccessKey": "yyy",
+                "region": "yyy"
             }
         }
     }
