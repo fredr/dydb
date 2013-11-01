@@ -1,6 +1,6 @@
 {
   "name": "dydb",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command line tool for AWS DynamoDB",
   "author": "fredrik@devloop.se",
   "licenses": [
