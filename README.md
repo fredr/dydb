@@ -42,3 +42,10 @@ Add `"default": true` to one of the entries, and that entry will be used when `-
             }
         }
     }
+
+#Example#
+
+```
+dydb list -e dev
+dydb dump Products -e prod > products.json
+```
