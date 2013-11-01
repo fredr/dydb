@@ -125,6 +125,19 @@ program.command('truncate <table>')
     
   });
 
+program.command('throughput <table> <read> <write>')
+  .description('change the provisioned throughput of a table')
+  .action(function(table, read, write) {
+    dynamo(getEnvironmentSettings()).setProvisionedThroughput(table, parseInt(read), parseInt(write), function(err) {
+      if (err) {
+        console.log('error setting throughput', err);
+        process.exit(1);
+      }
+
+      console.log('throughput updated');
+      process.exit(0);
+    })
+  });
 
 program.parse(process.argv);
 

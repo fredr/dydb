@@ -12,7 +12,8 @@
 `create <file>`     create a table using a json definition file  
 `delete <table>`    delete a table  
 `dump <table>`      get all data from a table  
-`truncate <table>`  remove all data from a table  
+`truncate <table>`  remove all data from a table
+`throughput <table> <read> <write>` change the provisioned throughput of a table
 
 ##Options##
 `-h, --help`        output usage information  
