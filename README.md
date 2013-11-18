@@ -50,3 +50,7 @@ Add `"default": true` to one of the entries, and that entry will be used when `-
 dydb list -e dev
 dydb dump Products -e prod > products.json
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fredr/dydb/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
