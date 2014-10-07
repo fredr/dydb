@@ -52,5 +52,3 @@ dydb dump Products -e prod > products.json
 ```
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fredr/dydb/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
